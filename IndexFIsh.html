@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FISH</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    table {
+      border-collapse: collapse; /* Ensures borders span the full width of merged cells */
+      width: 650px; /* Restrict the table width to 60% of the parent container */
+      min-width: 650px; /* Ensures the table does not shrink below 300px */
+      table-layout: fixed; /* Force the table to respect column width settings */
+      font-family: "Arial Unicode MS", Arial, sans-serif;
+    }
+
+    th, td {
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      background-color: #f4f4f4;
+    }
+
+    /* Remove bold styling from table headers */
+    th {
+      font-weight: normal; /* Make the header text normal (not bold) */
+    }
+
+
+    /* Fix the width for columns 1, 2, and 3 */
+    th:first-child, td:first-child {
+      width: 30%; /* Fixed width for the first column */
+      padding-left: 8px;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+      width: 10%; /* Fixed width for the second column */
+      text-align: center;
+    }
+
+    th:nth-child(3), td:nth-child(3) {
+      width: 20%; /* Fixed width for the third column */
+      text-align: left;
+      padding-left: 10px;
+    }
+    td:nth-child(3) {
+      font-size: 11px;
+    }
+
+    /* For columns 4 to 15: Apply fixed width only to the header (th) */
+    th:nth-child(n+4):nth-child(-n+15) {
+      width: auto; /* Smaller fixed width for columns 4 to 15 */
+      text-align: center;
+      border-left: solid;
+      border-color: #DDDDDD;
+    }
+
+    /* For columns 4 to 15: Apply fixed width only to the header (th) and body (td) */
+    th:nth-child(n+4):nth-child(-n+15), td:nth-child(n+4):nth-child(-n+15) {
+    padding: 0px;
+
+    }
+
+    /* For columns 4 to 15: Apply fixed width only to the header (th) and body (td) */
+    td:nth-child(n+4):nth-child(-n+15) {
+      width: auto; /* Smaller fixed width for columns 4 to 15 */
+      text-align: center;
+    }
+
+    /* Additional styling for gantt-bar if needed */
+    .gantt-bar {
+      background-color: #2196F3;
+      border-radius: 4px;
+      text-align: center;
+      color: white;
+      height: 21px;
+      width: 100%; /* Ensures the bar spans the full width of its parent cell */
+      font-size: 10px;
+      box-sizing: border-box; /* Includes padding in the width calculation */
+      padding-top: 4px; /* Adds space at the top of the cell */
+    }
+    /* Additional styling for gantt-bar if needed */
+    .gantt-empty {
+      background: #F4F4F4;
+      border-right: 2px solid #DDDDDD; /* Define width (2px) and color (#DDDDDD) */
+      border-right: 2px solid #DDDDDD; /* Define width (2px) and color (#DDDDDD) */
+
+    }
+    /* Ensures table header repeats on each page */
+        @media print {
+            /* Force a page break before a specific element */
+            .page-break-before {
+                page-break-before: always;
+            }
+            thead {
+                display: table-header-group;
+            }
+
+            /* Force a page break after a specific element */
+            .page-break-after {
+                page-break-after: always;
+            }
+
+            /* Prevent page breaks inside a table (keeps table rows together) */
+            .no-break {
+                page-break-inside: avoid;
+            }
+
+            /* Style for clarity */
+            .content {
+                margin-bottom: 20px;
+                padding: 10px;
+            }
+        }
+
+    .colortype1 { background-color: #DE80A1; }
+    .colortype2 { background-color: #F0CC78; }
+    .colortype3 { background-color: #F09165; }
+    .colortype4 { background-color: #2E87C2; }
+    .colortype5 { background-color: #75B077; }
+    .colortype6 { background: linear-gradient(to bottom, #F0CC78, #2E87C2);}
+    .colortype7 { background: linear-gradient(to right, #F0CC78, #F0CC78, #2E87C2, #2E87C2, #E37474, #E37474, #78D1A1); }
+
+    /* Apply smaller padding specifically to cells with text wrapping */
+    .wrap-text {
+      white-space: normal;  /* Allow the text to wrap */
+      word-wrap: break-word; /* Break words at the boundary */
+      line-height: 10px;
+      padding-top: 1px;
+    }
+    /* Styles for the search input for script*/
+    #searchInput {
+      margin-bottom: 5px;
+      width: 52%;
+      font-size: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      height: 20px; /* Directly adjust the height if needed */
+      padding-left: 5px;
+    }
+
+
+
+  </style>
+</head>
+<body>
+
+<h1>ACNH Fish <style padding=0px;>
+
+</style></h1>
+<!-- Search input -->
+<input type="text" id="searchInput" placeholder="Search for critter or price..." onkeyup="filterTable()">
+
+<table>
+  <thead>
+    <tr>
+      <th>Critter</th>
+      <th>Price</th>
+      <th>Found</th>
+      <th class="month-cell">J</th>
+      <th class="month-cell">F</th>
+      <th class="month-cell">M</th>
+      <th class="month-cell">A</th>
+      <th class="month-cell">M</th>
+      <th class="month-cell">J</th>
+      <th class="month-cell">J</th>
+      <th class="month-cell">A</th>
+      <th class="month-cell">S</th>
+      <th class="month-cell">O</th>
+      <th class="month-cell">N</th>
+      <th class="month-cell">D</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish81.png" alt="Anchovy" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Anchovy</td>
+       <td> 200 </td>
+       <td>Sea — S ○ 5</td> <!-- Apply the class here -->
+       <td colspan="12">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+       </td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish30.png" alt="Angelfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Angelfish*</td>
+       <td> 3,000 </td>
+       <td> River — S ○ 5 </td>
+       <td colspan="7">
+                 <!-- Flexible spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish36.png" alt="Arapaima" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Arapaima**</td>
+       <td> 10,000 </td>
+       <td> River — XXL ● 1</td>
+                 <!-- Flexible spans -->
+      <td colspan="5"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish33.png" alt="Arowana" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Arowana**</td>
+       <td> 10,000 </td>
+       <td> River — L ● 2</td>
+                            <!-- Flexible spans -->
+      <td colspan="5"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish47.png" alt="Barred Knifejaw" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Barred Knifejaw*</td>
+       <td> 5,000 </td>
+       <td> Sea — M ◐ 5 </td>
+       <!-- Flexible spans -->
+      <td colspan="2"></td>
+      <td colspan="9">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+    </tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish84.png" alt="Barreleye" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Barreleye***</td>
+       <td> 15,000 </td>
+       <td> Sea — S ● 1 </td>
+       <td colspan="12">
+          <div class="gantt-bar Colortype4"><span>9 PM - 4 AM</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish77.png" alt="Betta" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Betta*</td>
+       <td> 2,500 </td>
+       <td> River — S ◐ 4</td>
+       <!-- Flexible spans -->
+      <td colspan="4"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish0.png" alt="Bitterling" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Bitterling</td>
+       <td> 900 </td>
+       <td> River — XS ◐ 17 </td>
+       <!-- Flexible spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+            <td colspan="7"></td>
+      <td colspan="2">
+          <div class="gantt-bar colortype5"><span>All Day</span></div>
+      </td>
+
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish19.png" alt="Black Bass" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Black Bass</td>
+       <td> 400 </td>
+       <td> River — L ◐ 12 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish73.png" alt="Blowfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Blowfish*</td>
+       <td> 5,000 </td>
+       <td> Sea ◐ M — 5 </td>
+       <!-- Flexible spans -->
+      <td colspan="2">
+          <div class="gantt-bar Colortype4"><span style="font-size: 7px;">9 PM - 4 AM</span></div>
+      </td>
+            <td colspan="8"></td>
+      <td colspan="2">
+          <div class="gantt-bar Colortype4"><span style="font-size: 7px;">9 PM - 4 AM</span></div>
+      </td>
+
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish58.png" alt="Blue Marlin" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Blue Marlin**</td>
+       <td> 10,000 </td>
+       <td> Pier — XXL — 2 </td>
+       <!-- Flexible spans -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="2"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="1"></td>
+      <td colspan="2">
+                <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+
+</tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish17.png" alt="Bluegill" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Bluegill</td>
+       <td> 180 </td>
+       <td> River — S ○ 10 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+       </td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish42.png" alt="Butterfly Fish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Butterfly Fish</td>
+       <td> 1,000 </td>
+       <td> Sea — S ○ 5</td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish5.png" alt="Carp" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Carp</td>
+       <td> 300 </td>
+       <td> Pond — L ○ 9</td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish14.png" alt="Catfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Catfish</td>
+       <td> 800 </td>
+       <td> Pond — L ◐ 8</td>
+      <!-- Flexible spans -->
+      <td colspan="4"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish24.png" alt="Char" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Char*</td>
+       <td> 3,800 </td>
+       <td> Cliff — M ◐ 4 </td>
+       <!-- Flexible spans -->
+      <td colspan="2"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <td colspan="2"></td>
+      <td colspan="3">
+                <div class="gantt-bar colortype5"><span>All Day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish23.png" alt="Cherry Salmon" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Cherry Salmon</td>
+       <td> 1,000 </td>
+       <td> Cliff — M ◐ 9 </td>
+       <!-- Flexible spans -->
+      <td colspan="2"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <td colspan="2"></td>
+      <td colspan="3">
+                <div class="gantt-bar colortype5"><span>All Day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish40.png" alt="Clown Fish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Clown Fish</td>
+       <td> 650 </td>
+       <td> Sea — XS ◐ 6 </td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish63.png" alt="Coelacanth" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Coelacanth***</td>
+       <td> 15,000 </td>
+       <td> Sea* — XXL ● 2 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish10.png" alt="Crawfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Crawfish</td>
+       <td> 200 </td>
+       <td> Pond — S ○ 12</td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish2.png" alt="Crucian Carp" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Crucian Carp</td>
+       <td> 160 </td>
+       <td> River — S ○ 12 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish50.png" alt="Dab" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Dab</td>
+       <td> 300 </td>
+       <td> Sea — M ○ 14 </td>
+          <!-- 2 spans -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="5"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish3.png" alt="Dace" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Dace</td>
+       <td> 240 </td>
+       <td> River — M ○ 10 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish34.png" alt="Dorado" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Dorado***</td>
+       <td> 15,000 </td>
+       <td>River — XL ● 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish56.png" alt="Football Fish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Football Fish*</td>
+       <td> 2,500 </td>
+       <td> Sea — L ○ 6 </td>
+      <!-- 2 spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <td colspan="7"></td>
+      <td colspan="2">
+          <div class="gantt-bar colortype3"></div>
+      </td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish12.png" alt="Freshwater Goby" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Freshwater Goby</td>
+       <td> 400 </td>
+       <td> River — S ○ 5 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+       </td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish11.png" alt="Frog" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Frog</td>
+       <td> 120 </td>
+       <td> Pond — S ○ 9 </td>
+      <!-- Flexible spans -->
+      <td colspan="4"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="4"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish35.png" alt="Gar" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Gar**</td>
+       <td> 6,000 </td>
+       <td> Pond — XL ◐ 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish16.png" alt="Giant Snakehead" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Giant Snakehead**</td>
+       <td> 5,500 </td>
+       <td> Pond — L ◐ 2</td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="3">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="4"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish70.png" alt="Giant Trevally" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Giant Trevally*</td>
+       <td> 4,500 </td>
+       <td> Pier — XL ● 1 </td>
+      <!-- Flexible spans -->
+      <td colspan="4"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish79.png" alt="Golden Trout" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Golden Trout***</td>
+       <td> 15,000 </td>
+       <td> Cliff — M ● 1</td>
+      <!-- 2 spans -->
+      <td colspan="2"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <td colspan="3"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish7.png" alt="Goldfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Goldfish</td>
+       <td> 1,300 </td>
+       <td> Pond — XS ○ 4 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish62.png" alt="Great White Shark" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Great White Shark**</td>
+       <td> 15,000 </td>
+       <td> Sea — F ● 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish29.png" alt="Guppy" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Guppy</td>
+       <td> 1,300 </td>
+       <td>River — XS ○ 3 </td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="8">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish61.png" alt="Hammerhead Shark" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Hammerhead Shark*</td>
+       <td> 8,000 </td>
+       <td> Sea — F ◐ 1 </td>
+       <!-- Flexible spans -->
+      <td colspan="5"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+</tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish46.png" alt="Horse Mackerel" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Horse Mackerel</td>
+       <td> 150 </td>
+       <td> Sea — S ○ 21 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish9.png" alt="Killifish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Killifish</td>
+       <td> 300 </td>
+       <td>Pond — XS ◐ 4</td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="5">
+          <div class="gantt-bar colortype5"><span>All Day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="4"></td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish28.png" alt="King Salmon" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        King Salmon*</td>
+       <td> 1,800 </td>
+       <td>Mouth — XL ◐ 5 </td>
+       <!-- Flexible spans -->
+      <td colspan="8"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype5"><span style="font-size: 7px;">All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish6.png" alt="Koi" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Koi*</td>
+       <td> 4,000 </td>
+       <td>Pond — L ○ 4 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish13.png" alt="Loach" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Loach</td>
+       <td> 400 </td>
+       <td> River — S ○ 16 </td>
+       <!-- Flexible spans -->
+      <td colspan="2"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="7"></td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish82.png" alt="Mahi-Mahi" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Mahi-Mahi**</td>
+       <td> 6,000 </td>
+       <td> Pier — XL ● 1</td>
+       <!-- Flexible spans -->
+      <td colspan="4"></td>
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish66.png" alt="Mitten Crab" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Mitten Crab*</td>
+       <td> 2,000 </td>
+       <td> River — S ◐ 5</td>
+       <!-- Flexible spans -->
+      <td colspan="8"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish55.png" alt="Moray Eel" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Moray Eel*</td>
+       <td> 2,000 </td>
+       <td>Sea — E ○ 2 </td>
+       <!-- Flexible spans -->
+      <td colspan="7"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish43.png" alt="Napoleonfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Napoleonfish**</td>
+       <td> 10,000 </td>
+       <td>Sea — XXL ◐ 1 </td>
+       <!-- Flexible spans -->
+      <td colspan="6"></td>
+      <td colspan="2">
+          <div class="gantt-bar colortype1"><span style="font-size: 8px;">4 AM - 9 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="4"></td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish31.png" alt="Neon Tetra" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Neon Tetra</td>
+       <td> 500 </td>
+       <td> River — XS ○ 3 </td>
+       <!-- Flexible spans -->
+      <td colspan="3"></td>
+      <td colspan="8">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+</tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish67.png" alt="Nibble Fish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Nibble Fish*</td>
+       <td> 1,500 </td>
+       <td> River — XXL ◐ 2 </td>
+       <!-- Flexible spans -->
+      <td colspan="4"></td>
+      <td colspan="5">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish69.png" alt="Oarfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Oarfish**</td>
+       <td> 9,000 </td>
+       <td> Sea — XS ◐ 1 </td>
+      <!-- 2 spans -->
+      <td colspan="5">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="6"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype5"></div>
+      </td>
+</tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish60.png" alt="Ocean Sunfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Ocean Sunfish*</td>
+       <td> 4,000 </td>
+       <td> Sea — F ◐ 1 </td>
+      <!-- Flexible spans -->
+      <td colspan="6"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="3">
+          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish51.png" alt="Olive Flounder" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Olive Flounder</td>
+       <td> 800 </td>
+       <td> Sea — XXL ◐ 6 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish1.png" alt="Pale Chub" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Pale Chub</td>
+       <td> 200 </td>
+       <td> River — SH ○ 9</td>
+       <td colspan="12">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish20.png" alt="Pike" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Pike*</td>
+       <td> 1,800 </td>
+       <td> River — XL ◐ 2 </td>
+      <!-- 2 spans -->
+      <td colspan="8"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish32.png" alt="Piranha" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Piranha*</td>
+       <td> 2,500 </td>
+       <td>River — S ○ 3 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar wrap-text colortype6"><span style="font-size: 9px;">9 AM - 4 PM &<br> 9 PM - 4 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish21.png" alt="Pond Smelt" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Pond Smelt</td>
+       <td> 400 </td>
+       <td>River — S ○ 20</td>
+      <!-- 2 spans -->
+      <td colspan="2">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="9"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype5"></div>
+      </td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish8.png" alt="Pop-Eyed Goldfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Pop-Eyed Goldfish</td>
+       <td> 1,300 </td>
+       <td> Pond — XS ○ 2 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish45.png" alt="Puffer Fish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Puffer Fish</td>
+       <td> 250 </td>
+       <td> Sea — M ○ 8 </td>
+      <!-- Flexible spans -->
+      <td colspan="6"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish80.png" alt="Rainbowfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Rainbowfish</td>
+       <td> 800 </td>
+       <td> River — XS ◐ 3 </td>
+      <!-- Flexible spans -->
+      <td colspan="4"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="6">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish85.png" alt="Ranchu Goldfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Ranchu Goldfish*</td>
+       <td> 4,500 </td>
+       <td>Pond — S ◐ 2 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+       </td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish59.png" alt="Ray" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Ray*</td>
+       <td> 3,000 </td>
+       <td>Sea — XL ○ 2</td>
+      <!-- Flexible spans -->
+      <td colspan="7"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish49.png" alt="Red Snapper" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Red Snapper</td>
+       <td> 3,000 </td>
+       <td>Sea — L ◐ 7 </td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish71.png" alt="Ribbon Eel" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Ribbon Eel</td>
+       <td> 600 </td>
+       <td> Sea — E ◐ 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="5">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish68.png" alt="Saddled Bichir" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Saddled Bichir*</td>
+       <td> 4,000 </td>
+       <td> River — L ◐ 1 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype4"><span>9 PM - 4 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish27.png" alt="Salmon" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Salmon</td>
+       <td> 700 </td>
+       <td> Mouth — L ◐ 20</td>
+      <!-- Flexible spans -->
+      <td colspan="8"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="1">
+          <div class="gantt-bar colortype5"><span style="font-size: 6px;">All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish74.png" alt="Saw Shark" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Saw Shark**</td>
+       <td> 12,000 </td>
+       <td> Sea — F ◐ 1</td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish48.png" alt="Sea Bass" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Sea Bass</td>
+       <td> 400 </td>
+       <td> Sea — XL ○ 18</td>
+       <td colspan="12">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+       </td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish37.png" alt="Sea Butterfly" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Sea Butterfly</td>
+       <td> 1,000 </td>
+       <td> Sea — XS ○ 11 </td>
+      <!-- 2 spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="8"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype5"></div>
+      </td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish39.png" alt="Sea Horse" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Sea Horse</td>
+       <td> 1,100 </td>
+       <td> Sea — XS ◐ 7</td>
+      <!-- Flexible spans -->
+      <td colspan="3"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="8">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish78.png" alt="Snapping Turtle" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Snapping Turtle</td>
+       <td> 5,000 </td>
+       <td> River — L ◐ 3 </td>
+      <!-- Flexible spans -->
+      <td colspan="3"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="7">
+          <div class="gantt-bar colortype4"><span>9 PM - 4 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish65.png" alt="Soft-Shelled Turtle" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Soft-Shelled Turtle*</td>
+       <td> 3,750 </td>
+       <td> River — L ◐ 4 </td>
+      <!-- Flexible spans -->
+      <td colspan="7"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="2">
+          <div class="gantt-bar colortype3"><span style="font-size: 7px;">4 PM - 9 AM</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish52.png" alt="Squid" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Squid</td>
+       <td> 500 </td>
+       <td> Sea — M ○ 10 </td>
+      <!-- 2 spans -->
+      <td colspan="8">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="3"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype5"></div>
+      </td>
+</tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish26.png" alt="Stringfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Stringfish***</td>
+       <td> 15,000 </td>
+       <td> Cliff — XL ● 1 </td>
+      <!-- 2 spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+      </td>
+      <td colspan="8"></td>
+      <td colspan="1">
+          <div class="gantt-bar colortype3"></div>
+      </td>
+</tr>
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish75.png" alt="Sturgeon" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Sturgeon*</td>
+       <td> 10,000 </td>
+       <td> Mouth — XXL ● 4 </td>
+      <!-- 2 spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="5"></td>
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish83.png" alt="Suckerfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Suckerfish*</td>
+       <td> 1,500 </td>
+       <td>Sea — F ○ 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish41.png" alt="Surgeonfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Surgeonfish</td>
+       <td> 1,000 </td>
+       <td> Sea — S ○ 2 </td>
+      <!-- Flexible spans -->
+      <td colspan="3"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="6">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish22.png" alt="Sweetfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Sweetfish</td>
+       <td> 900 </td>
+       <td>River — M ◐ 10 </td>
+      <!-- Flexible spans -->
+      <td colspan="6"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish64.png" alt="Tadpole" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Tadpole</td>
+       <td> 100 </td>
+       <td>Pond — XS ○ 6</td>
+      <!-- Flexible spans -->
+      <td colspan="2"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="5">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="5"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish76.png" alt="Tilapia" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Tilapia</td>
+       <td> 800 </td>
+       <td> River — M ◐ 9</td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="5">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="2"></td>
+    </tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish57.png" alt="Tuna" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Tuna**</td>
+       <td> 7,000 </td>
+       <td> Pier — XXL ● 2 </td>
+      <!-- 2 spans -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="6"></td>
+      <td colspan="2">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+</tr>
+
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish72.png" alt="Whale Shark" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Whale Shark**</td>
+       <td> 13,000 </td>
+       <td> Sea — F ● 1 </td>
+      <!-- Flexible spans -->
+      <td colspan="5"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="4">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="3"></td>
+    </tr>
+
+
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish18.png" alt="Yellow Perch" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Yellow Perch</td>
+       <td> 300 </td>
+       <td> River — M ◐ 10 </td>
+      <!-- 2 spans -->
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <td colspan="6"></td>
+      <td colspan="3">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+</tr>
+
+    <tr>
+       <td>
+        <img src="https://acnhcdn.com/latest/MenuIcon/Fish44.png" alt="Zebra Turkeyfish" style="height: 1.75em; width: auto; object-fit: cover; vertical-align: middle; margin-right: 4px;">
+        Zebra Turkeyfish</td>
+       <td> 500 </td>
+       <td> Sea — M ○ 8 </td>
+      <!-- Flexible spans -->
+      <td colspan="3"></td> <!-- Empty from Jan to Apr -->
+      <td colspan="8">
+          <div class="gantt-bar colortype5"><span>All day</span></div>
+      </td>
+      <!-- Empty from Nov to Dec need for border -->
+      <td colspan="1"></td>
+    </tr>
+
+
+
+  </tbody>
+</table>
+
+<script>
+// JavaScript for filtering the table
+function filterTable() {
+  var input, filter, table, tr, td, i, j, txtValue;
+  input = document.getElementById("searchInput");
+  filter = input.value.toLowerCase();
+  table = document.querySelector("table");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows
+  for (i = 1; i < tr.length; i++) { // skip header row
+    tr[i].style.display = "none"; // Hide rows initially
+    td = tr[i].getElementsByTagName("td");
+
+    // Loop through all columns in the current row
+    for (j = 0; j < td.length; j++) {
+      if (td[j]) {
+        txtValue = td[j].textContent || td[j].innerText;
+        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+          tr[i].style.display = ""; // Show row if there's a match
+          break;
+        }
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>
