@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FISH</title>
   <style>
+
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      background-color: #3F4450;
+      color: rgba(245, 245, 245, 0.75); /* Opacity added here (0.8 = 80% opacity) */
+      font-size: 14px;
     }
+
+
 
     table {
       border-collapse: collapse; /* Ensures borders span the full width of merged cells */
-      width: 650px; /* Restrict the table width to 60% of the parent container */
-      min-width: 650px; /* Ensures the table does not shrink below 300px */
+      width: 550px; /* Restrict the table width to 60% of the parent container */
+      min-width: 550px; /* Ensures the table does not shrink below 300px */
       table-layout: fixed; /* Force the table to respect column width settings */
       font-family: "Arial Unicode MS", Arial, sans-serif;
     }
@@ -22,7 +28,7 @@
       border-top: 1px solid #ddd;
       border-bottom: 1px solid #ddd;
       text-align: left;
-      background-color: #f4f4f4;
+      background-color: ##121212;
     }
 
     /* Remove bold styling from table headers */
@@ -33,7 +39,7 @@
 
     /* Fix the width for columns 1, 2, and 3 */
     th:first-child, td:first-child {
-      width: 30%; /* Fixed width for the first column */
+      width: 25%; /* Fixed width for the first column */
       padding-left: 8px;
     }
 
@@ -43,20 +49,22 @@
     }
 
     th:nth-child(3), td:nth-child(3) {
-      width: 20%; /* Fixed width for the third column */
+      width: 15%; /* Fixed width for the third column */
       text-align: left;
-      padding-left: 10px;
+      padding-right: 5px;
     }
     td:nth-child(3) {
       font-size: 11px;
+      padding-right: 5px;
     }
 
     /* For columns 4 to 15: Apply fixed width only to the header (th) */
     th:nth-child(n+4):nth-child(-n+15) {
-      width: auto; /* Smaller fixed width for columns 4 to 15 */
+      width: 10px; /* Smaller fixed width for columns 4 to 15 */
       text-align: center;
       border-left: solid;
       border-color: #DDDDDD;
+
     }
 
     /* For columns 4 to 15: Apply fixed width only to the header (th) and body (td) */
@@ -200,7 +208,7 @@
        <td colspan="7">
                  <!-- Flexible spans -->
       <td colspan="3">
-          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+          <div class="gantt-bar colortype1"><span style="font-size: 8px;">4 AM - 9 PM</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="2"></td>
@@ -326,11 +334,11 @@
        <td> Sea ◐ M — 5 </td>
        <!-- Flexible spans -->
       <td colspan="2">
-          <div class="gantt-bar Colortype4"><span style="font-size: 7px;">9 PM - 4 AM</span></div>
+          <div class="gantt-bar Colortype4"><span style="font-size: 6px;">9 PM </span></div>
       </td>
             <td colspan="8"></td>
       <td colspan="2">
-          <div class="gantt-bar Colortype4"><span style="font-size: 7px;">9 PM - 4 AM</span></div>
+          <div class="gantt-bar Colortype4"><span style="font-size: 6px;">- 4 AM</span></div>
       </td>
 
 </tr>
@@ -587,7 +595,7 @@
        <td> Sea — L ○ 6 </td>
       <!-- 2 spans -->
       <td colspan="3">
-          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"><span style="font-size: 8px;">4 PM - 9 AM</span></div>
       </td>
       <td colspan="7"></td>
       <td colspan="2">
@@ -655,7 +663,7 @@
       <!-- Flexible spans -->
       <td colspan="5"></td> <!-- Empty from Jan to Apr -->
       <td colspan="3">
-          <div class="gantt-bar colortype2"><span>9 AM - 4 PM</span></div>
+          <div class="gantt-bar colortype2"><span style="font-size: 8px;">9 AM - 4 PM</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="4"></td>
@@ -672,7 +680,7 @@
       <!-- Flexible spans -->
       <td colspan="4"></td> <!-- Empty from Jan to Apr -->
       <td colspan="6">
-          <div class="gantt-bar colortype5"><span>All day</span></div>
+          <div class="gantt-bar colortype5"><span >All day</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="2"></td>
@@ -689,11 +697,11 @@
       <!-- 2 spans -->
       <td colspan="2"></td>
       <td colspan="3">
-          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"><span style="font-size: 8px;">4 PM - 9 AM</span></div>
       </td>
       <td colspan="3"></td>
       <td colspan="3">
-          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"><span style="font-size: 8px;">4 PM - 9 AM</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="1"></td>
@@ -807,7 +815,7 @@
        <!-- Flexible spans -->
       <td colspan="8"></td>
       <td colspan="1">
-          <div class="gantt-bar colortype5"><span style="font-size: 7px;">All day</span></div>
+          <div class="gantt-bar colortype5"></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="3"></td>
@@ -871,7 +879,7 @@
        <!-- Flexible spans -->
       <td colspan="8"></td>
       <td colspan="3">
-          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"><span style="font-size: 8px;">4 PM - 9 AM</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="1"></td>
@@ -906,7 +914,7 @@
        <!-- Flexible spans -->
       <td colspan="6"></td>
       <td colspan="2">
-          <div class="gantt-bar colortype1"><span style="font-size: 8px;">4 AM - 9 PM</span></div>
+          <div class="gantt-bar colortype1"></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="4"></td>
@@ -979,7 +987,7 @@
       <!-- Flexible spans -->
       <td colspan="6"></td> <!-- Empty from Jan to Apr -->
       <td colspan="3">
-          <div class="gantt-bar colortype1"><span>4 AM - 9 PM</span></div>
+          <div class="gantt-bar colortype1"><span style="font-size: 8px;">4 AM - 9 PM</span></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="3"></td>
@@ -1204,7 +1212,7 @@
       <!-- Flexible spans -->
       <td colspan="8"></td> <!-- Empty from Jan to Apr -->
       <td colspan="1">
-          <div class="gantt-bar colortype5"><span style="font-size: 6px;">All day</span></div>
+          <div class="gantt-bar colortype5"></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="3"></td>
@@ -1305,7 +1313,7 @@
       <!-- Flexible spans -->
       <td colspan="7"></td> <!-- Empty from Jan to Apr -->
       <td colspan="2">
-          <div class="gantt-bar colortype3"><span style="font-size: 7px;">4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"></div>
       </td>
       <!-- Empty from Nov to Dec need for border -->
       <td colspan="3"></td>
@@ -1342,7 +1350,7 @@
        <td> Cliff — XL ● 1 </td>
       <!-- 2 spans -->
       <td colspan="3">
-          <div class="gantt-bar colortype3"><span>4 PM - 9 AM</span></div>
+          <div class="gantt-bar colortype3"><span style="font-size: 8px;">4 PM - 9 AM</span></div>
       </td>
       <td colspan="8"></td>
       <td colspan="1">
